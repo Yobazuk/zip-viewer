@@ -319,45 +319,78 @@ function getFileType(filename) {
 }
 
 /**
- * Displays metadata for the selected file
- * @param {Object} entry - File or directory entry
+ * Creates a collapsible comment header
+ * @param {string} title - Title of the comment section
+ * @param {boolean} isExpanded - Whether the section should be expanded by default
+ * @returns {Object} The header element and a function to toggle expansion
  */
-function displayMetadata(entry) {
+function createCommentHeader(title, isExpanded = true) {
+    const header = document.createElement('div');
+    header.className = 'comment-header';
+    
+    const icon = document.createElement('span');
+    icon.className = `collapse-icon${isExpanded ? ' expanded' : ''}`;
+    icon.innerHTML = `
+        <svg width="16" height="16" viewBox="0 0 16 16">
+            <path fill="currentColor" d="M6 12l4-4-4-4" stroke="currentColor" stroke-width="2" fill="none"/>
+        </svg>
+    `;
+    
+    const titleElement = document.createElement('h4');
+    titleElement.textContent = title;
+    
+    header.appendChild(icon);
+    header.appendChild(titleElement);
+    
+    return header;
+}
+
+/**
+ * Displays metadata for the selected file or archive
+ * @param {Object} entry - File or directory entry, null if showing archive only
+ */
+function displayMetadata(entry = null) {
     metadataContent.innerHTML = '';
-
-    // Create metadata grid
-    const metadataGrid = document.createElement('div');
-    metadataGrid.className = 'metadata-grid';
+    const metadataPanel = document.getElementById('metadata-panel');
     
-    // Extract directory path and filename
-    const pathParts = entry.entryName.split('/');
-    const fileName = pathParts.pop(); // Get the last part (filename)
-    const directoryPath = pathParts.length > 0 ? '/' + pathParts.join('/') : '/';
-    
-    const metadata = [
-        { label: 'Name', value: fileName },
-        { label: 'Directory', value: directoryPath },
-        { label: 'Type', value: entry.isDirectory ? 'Directory' : getFileType(fileName) },
-        { label: 'Size', value: entry.isDirectory ? '-' : formatFileSize(entry.size) },
-        { label: 'Last Modified', value: entry.lastModified },
-        { label: 'Compressed Size', value: entry.isDirectory ? '-' : formatFileSize(entry.compressedSize) },
-        { label: 'Compression Ratio', value: entry.isDirectory ? '-' : calculateCompressionRatio(entry.size, entry.compressedSize) }
-    ];
+    // Toggle archive-only class based on whether a file is selected
+    metadataPanel.classList.toggle('archive-only', !entry);
 
-    metadata.forEach(item => {
-        const label = document.createElement('div');
-        label.className = 'metadata-label';
-        label.textContent = item.label;
+    if (entry) {
+        // Create metadata grid for file/directory
+        const metadataGrid = document.createElement('div');
+        metadataGrid.className = 'metadata-grid';
+        
+        // Extract directory path and filename
+        const pathParts = entry.entryName.split('/');
+        const fileName = pathParts.pop();
+        const directoryPath = pathParts.length > 0 ? '/' + pathParts.join('/') : '/';
+        
+        const metadata = [
+            { label: 'Name', value: fileName },
+            { label: 'Directory', value: directoryPath },
+            { label: 'Type', value: entry.isDirectory ? 'Directory' : getFileType(fileName) },
+            { label: 'Size', value: entry.isDirectory ? '-' : formatFileSize(entry.size) },
+            { label: 'Last Modified', value: entry.lastModified },
+            { label: 'Compressed Size', value: entry.isDirectory ? '-' : formatFileSize(entry.compressedSize) },
+            { label: 'Compression Ratio', value: entry.isDirectory ? '-' : calculateCompressionRatio(entry.size, entry.compressedSize) }
+        ];
 
-        const value = document.createElement('div');
-        value.className = 'metadata-value';
-        value.textContent = item.value;
+        metadata.forEach(item => {
+            const label = document.createElement('div');
+            label.className = 'metadata-label';
+            label.textContent = item.label;
 
-        metadataGrid.appendChild(label);
-        metadataGrid.appendChild(value);
-    });
+            const value = document.createElement('div');
+            value.className = 'metadata-value';
+            value.textContent = item.value;
 
-    metadataContent.appendChild(metadataGrid);
+            metadataGrid.appendChild(label);
+            metadataGrid.appendChild(value);
+        });
+
+        metadataContent.appendChild(metadataGrid);
+    }
 
     // Add comments section
     displayComments(entry);
@@ -365,40 +398,60 @@ function displayMetadata(entry) {
 
 /**
  * Displays file and ZIP comments
- * @param {Object} entry - File or directory entry
+ * @param {Object} entry - File or directory entry, null if showing archive only
  */
-function displayComments(entry) {
+function displayComments(entry = null) {
+    if (!((entry && entry.comment) || currentZipComment)) return;
+
+    const commentsContainer = document.createElement('div');
+    commentsContainer.className = 'comments-container';
+
     const commentsSection = document.createElement('div');
     commentsSection.className = 'zip-comment';
     
-    // Add file comment if it exists
-    if (entry.comment) {
-        const fileCommentTitle = document.createElement('h4');
-        fileCommentTitle.textContent = 'File Comment';
-        commentsSection.appendChild(fileCommentTitle);
-
+    const bothCommentsExist = entry && entry.comment && currentZipComment;
+    
+    // If a file is selected and it has a comment, show it
+    if (entry && entry.comment) {
+        const fileCommentHeader = createCommentHeader('File Comment', !bothCommentsExist);
         const fileCommentContent = document.createElement('div');
         fileCommentContent.className = 'zip-comment-content';
+        if (bothCommentsExist) fileCommentContent.classList.add('collapsed');
         fileCommentContent.textContent = entry.comment;
+        
+        commentsSection.appendChild(fileCommentHeader);
         commentsSection.appendChild(fileCommentContent);
+        
+        fileCommentHeader.addEventListener('click', () => {
+            fileCommentHeader.querySelector('.collapse-icon').classList.toggle('expanded');
+            fileCommentContent.classList.toggle('collapsed');
+        });
     }
 
-    // Add ZIP comment if it exists
+    // Show ZIP comment if it exists
     if (currentZipComment) {
-        const zipCommentTitle = document.createElement('h4');
-        zipCommentTitle.textContent = 'Comment';
-        zipCommentTitle.style.marginTop = entry.comment ? '20px' : '0';
-        commentsSection.appendChild(zipCommentTitle);
-
-        const zipCommentContent = document.createElement('div');
-        zipCommentContent.className = 'zip-comment-content';
-        zipCommentContent.textContent = currentZipComment;
-        commentsSection.appendChild(zipCommentContent);
+        const archiveCommentHeader = createCommentHeader('Archive Comment', !entry);
+        const archiveCommentContent = document.createElement('div');
+        archiveCommentContent.className = 'zip-comment-content';
+        if (entry) archiveCommentContent.classList.add('collapsed');
+        archiveCommentContent.textContent = currentZipComment;
+        
+        // Add spacing between comments if both exist
+        if (entry && entry.comment) {
+            archiveCommentHeader.style.marginTop = '20px';
+        }
+        
+        commentsSection.appendChild(archiveCommentHeader);
+        commentsSection.appendChild(archiveCommentContent);
+        
+        archiveCommentHeader.addEventListener('click', () => {
+            archiveCommentHeader.querySelector('.collapse-icon').classList.toggle('expanded');
+            archiveCommentContent.classList.toggle('collapsed');
+        });
     }
 
-    if (entry.comment || currentZipComment) {
-        metadataContent.appendChild(commentsSection);
-    }
+    commentsContainer.appendChild(commentsSection);
+    metadataContent.appendChild(commentsContainer);
 }
 
 /**

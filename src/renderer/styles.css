@@ -280,26 +280,22 @@ body {
     flex-direction: column;
     gap: 16px;
     flex: 1;
-    overflow: auto;
-    padding: 0 4px;
-}
-
-/* Hide scrollbar when content doesn't overflow */
-.metadata-content:not(:hover)::-webkit-scrollbar {
-    display: none;
+    min-height: 0;
+    overflow: hidden;
 }
 
 .metadata-grid {
     display: grid;
     grid-template-columns: 140px minmax(0, 1fr);
-    gap: 15px 24px;
+    gap: 8px 24px;
     font-size: var(--font-size-sm);
     width: 100%;
-    padding: 14px 20px;
+    padding: 12px 20px;
     background-color: var(--bg-tertiary);
     border-radius: 8px;
     overflow-x: auto;
     font-family: var(--font-mono);
+    flex-shrink: 0;
 }
 
 .metadata-label {
@@ -307,7 +303,6 @@ body {
     font-weight: 500;
     white-space: nowrap;
     font-size: var(--font-size-sm);
-    padding: 1px 0;
     letter-spacing: var(--letter-spacing-wide);
 }
 
@@ -316,36 +311,57 @@ body {
     word-break: normal;
     overflow-wrap: anywhere;
     font-size: var(--font-size-sm);
-    line-height: var(--line-height-normal);
+    line-height: 1.4;
     overflow-x: auto;
-    padding: 1px 0;
 }
 
-.metadata-row {
-    display: contents;
+.comments-container {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+    padding-right: 4px;
 }
 
-.metadata-row:hover .metadata-value {
-    white-space: normal;
-    word-break: break-all;
+.comments-container .zip-comment {
+    margin-top: 16px;
 }
 
 .zip-comment {
-    margin-top: 20px;
-    padding-top: 20px;
-    border-top: 1px solid var(--border-color);
     width: 100%;
 }
 
-.zip-comment h4 {
+.comment-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    user-select: none;
+    padding: 4px 0;
+}
+
+.comment-header:hover {
+    color: var(--accent-primary);
+}
+
+.comment-header h4 {
     color: var(--text-primary);
-    margin-bottom: 12px;
     font-size: 15px;
     font-weight: 600;
+    margin: 0;
+}
+
+.collapse-icon {
+    width: 16px;
+    height: 16px;
+    transition: transform 0.2s ease;
+}
+
+.collapse-icon.expanded {
+    transform: rotate(90deg);
 }
 
 .zip-comment-content {
-    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    font-family: var(--font-mono);
     white-space: pre-wrap;
     background-color: var(--bg-tertiary);
     padding: 16px;
@@ -354,7 +370,34 @@ body {
     font-size: 13px;
     line-height: 1.5;
     max-height: 160px;
-    overflow: auto;
+    overflow-y: auto;
+    margin-top: 12px;
+    transition: all 0.2s ease;
+}
+
+.zip-comment-content.collapsed {
+    display: none;
+}
+
+/* Full-width archive comment when no file selected */
+.metadata-panel.archive-only {
+    display: flex;
+    flex-direction: column;
+}
+
+.metadata-panel.archive-only .zip-comment {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.metadata-panel.archive-only .zip-comment-content {
+    max-height: none;
+    flex: 1;
+    margin-top: 12px;
 }
 
 .file-icon, .folder-icon {

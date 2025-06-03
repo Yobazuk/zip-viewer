@@ -5,7 +5,7 @@
   "main": "src/main.js",
   "scripts": {
     "start": "electron .",
-    "dev": "set NODE_ENV=development && electron . C:\\Users\\yobaz\\Desktop\\abc\\myabc.zip",
+    "dev": "set NODE_ENV=development && electron . C:\\Users\\yobaz\\Desktop\\demo_archive.zip",
     "generate-icons": "node build/generate-icons.js",
     "build": "npm run generate-icons && electron-builder",
     "test": "echo \"Error: no test specified\" && exit 1"
