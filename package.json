@@ -1,0 +1,60 @@
+{
+  "name": "zip-viewer",
+  "version": "1.0.0",
+  "description": "A modern ZIP file viewer desktop application",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "set NODE_ENV=development && electron . C:\\Users\\yobaz\\Desktop\\abc\\myabc.zip",
+    "generate-icons": "node build/generate-icons.js",
+    "build": "npm run generate-icons && electron-builder",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "adm-zip": "^0.5.10",
+    "electron-store": "^8.1.0"
+  },
+  "devDependencies": {
+    "electron": "^28.1.0",
+    "electron-builder": "^24.9.1",
+    "electron-reload": "^2.0.0-alpha.1",
+    "png-to-ico": "^2.1.8",
+    "sharp": "^0.34.2"
+  },
+  "build": {
+    "appId": "com.zipviewer.app",
+    "productName": "ZIP Viewer",
+    "win": {
+      "target": "nsis",
+      "icon": "build/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "ZIP Viewer",
+      "include": "build/installer.nsh"
+    },
+    "fileAssociations": [
+      {
+        "ext": "zip",
+        "name": "ZIP Archive",
+        "description": "ZIP Archive File",
+        "role": "Viewer",
+        "icon": "build/file-icon.ico",
+        "isPackage": false
+      }
+    ],
+    "protocols": [
+      {
+        "name": "ZIP Viewer Protocol",
+        "schemes": [
+          "zipviewer"
+        ]
+      }
+    ]
+  }
+}

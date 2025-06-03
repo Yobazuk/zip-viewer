@@ -1,0 +1,474 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+    --bg-primary: #151515;
+    --bg-secondary: #1c1c1c;
+    --bg-tertiary: #242424;
+    --text-primary: #e4e4e4;
+    --text-secondary: #8f8f8f;
+    --accent-primary: #4a9eff;
+    --accent-secondary: #2b7de1;
+    --border-color: #2a2a2a;
+    --hover-bg: #2a2a2a;
+    --selected-bg: rgba(74, 158, 255, 0.15);
+    --folder-color: #4a9eff;
+    --file-color: #b4b4b4;
+    
+    /* Typography */
+    --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --font-mono: 'JetBrains Mono', 'Consolas', monospace;
+    --font-size-xs: 11px;
+    --font-size-sm: 13px;
+    --font-size-md: 14px;
+    --font-size-lg: 16px;
+    --font-size-xl: 20px;
+    --font-size-2xl: 24px;
+    --font-size-3xl: 28px;
+    --line-height-tight: 1.2;
+    --line-height-normal: 1.5;
+    --letter-spacing-tight: -0.02em;
+    --letter-spacing-wide: 0.02em;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-primary);
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    height: 100vh;
+    font-size: var(--font-size-md);
+    line-height: var(--line-height-normal);
+    margin: 0;
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.titlebar {
+    height: 32px;
+    background: var(--bg-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    -webkit-app-region: drag;
+    user-select: none;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.titlebar-drag-region {
+    flex: 1;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    padding-left: 12px;
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+    font-weight: 500;
+    letter-spacing: var(--letter-spacing-tight);
+}
+
+.window-controls {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    -webkit-app-region: no-drag;
+}
+
+.window-control {
+    width: 46px;
+    height: 100%;
+    border: none;
+    background: none;
+    outline: none;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.window-control:hover {
+    background: var(--hover-bg);
+}
+
+.window-control svg {
+    width: 12px;
+    height: 12px;
+    stroke-width: 1;
+}
+
+.close-button {
+    color: var(--text-secondary);
+}
+
+.close-button:hover {
+    background: #e81123;
+    color: white;
+}
+
+.close-button svg {
+    stroke: currentColor;
+    stroke-width: 1;
+    fill: none;
+}
+
+.app-container {
+    display: flex;
+    height: calc(100vh - 32px);
+}
+
+.sidebar {
+    width: 55%;
+    background-color: var(--bg-secondary);
+    border-right: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    padding: 24px;
+}
+
+.file-info {
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 20px;
+}
+
+.file-info-container {
+    display: flex;
+    align-items: flex-end;
+    gap: 16px;
+    min-width: 0;
+}
+
+.file-info h2 {
+    font-size: var(--font-size-3xl);
+    font-weight: 800;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    letter-spacing: var(--letter-spacing-tight);
+    line-height: 1;
+    margin: 0;
+}
+
+.current-directory {
+    font-size: var(--font-size-md);
+    font-weight: 400;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+    flex: 1;
+    line-height: 1;
+    padding-bottom: 2px;
+}
+
+.file-tree {
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 8px;
+}
+
+.file-tree-item {
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 6px;
+    margin-bottom: 2px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: all 0.2s ease;
+    user-select: none;
+}
+
+.file-tree-item:hover {
+    background-color: var(--hover-bg);
+}
+
+.file-tree-item.selected {
+    background-color: var(--selected-bg);
+    color: var(--accent-primary);
+}
+
+.main-content {
+    flex: 1;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    min-width: 400px;
+    background-color: var(--bg-primary);
+}
+
+.drop-zone {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    top: 32px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--bg-primary);
+    z-index: 1000;
+    border: 2px dashed var(--border-color);
+    transition: all 0.2s ease;
+}
+
+.drop-zone.hidden {
+    display: none;
+}
+
+.drop-message {
+    text-align: center;
+}
+
+.drop-message h3 {
+    color: var(--text-primary);
+    font-size: var(--font-size-xl);
+    margin-bottom: 12px;
+    font-weight: 500;
+    letter-spacing: var(--letter-spacing-tight);
+}
+
+.drop-message p {
+    color: var(--text-secondary);
+    font-size: var(--font-size-md);
+    letter-spacing: var(--letter-spacing-tight);
+}
+
+.drop-zone.drag-over {
+    background-color: var(--bg-secondary);
+    border-color: var(--accent-primary);
+}
+
+.metadata-panel {
+    display: none;
+    background-color: var(--bg-secondary);
+    border-radius: 16px;
+    padding: 28px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 320px;
+}
+
+.metadata-panel.active {
+    display: flex;
+}
+
+.metadata-panel h3 {
+    color: var(--text-primary);
+    margin-bottom: 24px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border-color);
+    font-weight: 600;
+    font-size: var(--font-size-2xl);
+    letter-spacing: var(--letter-spacing-tight);
+}
+
+.metadata-content {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    flex: 1;
+    overflow: auto;
+    padding: 0 4px;
+}
+
+/* Hide scrollbar when content doesn't overflow */
+.metadata-content:not(:hover)::-webkit-scrollbar {
+    display: none;
+}
+
+.metadata-grid {
+    display: grid;
+    grid-template-columns: 140px minmax(0, 1fr);
+    gap: 15px 24px;
+    font-size: var(--font-size-sm);
+    width: 100%;
+    padding: 14px 20px;
+    background-color: var(--bg-tertiary);
+    border-radius: 8px;
+    overflow-x: auto;
+    font-family: var(--font-mono);
+}
+
+.metadata-label {
+    color: var(--text-secondary);
+    font-weight: 500;
+    white-space: nowrap;
+    font-size: var(--font-size-sm);
+    padding: 1px 0;
+    letter-spacing: var(--letter-spacing-wide);
+}
+
+.metadata-value {
+    color: var(--text-primary);
+    word-break: normal;
+    overflow-wrap: anywhere;
+    font-size: var(--font-size-sm);
+    line-height: var(--line-height-normal);
+    overflow-x: auto;
+    padding: 1px 0;
+}
+
+.metadata-row {
+    display: contents;
+}
+
+.metadata-row:hover .metadata-value {
+    white-space: normal;
+    word-break: break-all;
+}
+
+.zip-comment {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-color);
+    width: 100%;
+}
+
+.zip-comment h4 {
+    color: var(--text-primary);
+    margin-bottom: 12px;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.zip-comment-content {
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    white-space: pre-wrap;
+    background-color: var(--bg-tertiary);
+    padding: 16px;
+    border-radius: 12px;
+    color: var(--text-secondary);
+    font-size: 13px;
+    line-height: 1.5;
+    max-height: 160px;
+    overflow: auto;
+}
+
+.file-icon, .folder-icon {
+    width: 20px;
+    height: 20px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    opacity: 0.9;
+}
+
+.folder-icon {
+    background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%230ea5e9" d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>');
+}
+
+.file-icon {
+    background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%2394a3b8" d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2z"/></svg>');
+}
+
+.file-size {
+    font-size: var(--font-size-xs);
+    color: var(--text-secondary);
+    margin-left: auto;
+    font-family: var(--font-mono);
+    letter-spacing: var(--letter-spacing-wide);
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-secondary);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--bg-tertiary);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--border-color);
+}
+
+::-webkit-scrollbar-corner {
+    background: var(--bg-secondary);
+}
+
+/* Only show scrollbars on hover */
+*::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+*:not(:hover)::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+}
+
+*:not(:hover)::-webkit-scrollbar-thumb {
+    background: transparent;
+}
+
+/* Selection styling */
+::selection {
+    background-color: var(--accent-primary);
+    color: var(--text-primary);
+}
+
+.file-name-section {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+    min-width: 0;
+}
+
+.file-name {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.open-button {
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.file-tree-item:hover .open-button {
+    opacity: 1;
+}
+
+.open-button:hover {
+    background-color: var(--accent-primary);
+}
+
+.open-icon {
+    width: 16px;
+    height: 16px;
+    background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%23ffffff" d="M19 19H5V5h7V3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg>');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    opacity: 0.9;
+} 
