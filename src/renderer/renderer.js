@@ -102,6 +102,8 @@ async function openZipFile(filePath) {
         
         displayFileTree(currentPath);
         updateCurrentFile(filePath);
+        // Show archive info initially since no file is selected
+        displayMetadata(null);
         console.log('File loaded successfully');
     } else {
         console.error('Error opening ZIP file:', result.error);
@@ -215,10 +217,26 @@ function displayFileTree(path) {
         fileTree.appendChild(backItem);
     }
     
+    // Create a container for the entries
+    const entriesContainer = document.createElement('div');
+    entriesContainer.className = 'file-tree-entries';
+    
     sortedEntries.forEach(entry => {
         const item = createFileTreeItem(entry);
-        fileTree.appendChild(item);
+        entriesContainer.appendChild(item);
     });
+    
+    // Add click handler to the container for deselection
+    entriesContainer.addEventListener('click', (e) => {
+        // If clicking the container itself (not a file item)
+        if (e.target === entriesContainer) {
+            const selectedItems = fileTree.getElementsByClassName('selected');
+            Array.from(selectedItems).forEach(item => item.classList.remove('selected'));
+            displayMetadata(null); // Show archive info when no file is selected
+        }
+    });
+    
+    fileTree.appendChild(entriesContainer);
 }
 
 /**
@@ -258,15 +276,29 @@ function createFileTreeItem(entry) {
     item.appendChild(nameSection);
     item.appendChild(sizeSpan);
     
-    item.addEventListener('click', () => {
+    item.addEventListener('click', (e) => {
+        // Prevent click handling if clicking the open button
+        if (e.target.closest('.open-button')) {
+            return;
+        }
+
         if (entry.isDirectory) {
             displayFileTree(entry.entryName);
         } else {
-            displayMetadata(entry);
-            // Add selected class to clicked item
+            const wasSelected = item.classList.contains('selected');
+            
+            // Remove selected class from all items
             const selectedItems = fileTree.getElementsByClassName('selected');
             Array.from(selectedItems).forEach(item => item.classList.remove('selected'));
-            item.classList.add('selected');
+            
+            if (!wasSelected) {
+                // Select this item and show its metadata
+                item.classList.add('selected');
+                displayMetadata(entry);
+            } else {
+                // Item was already selected, deselect it and show archive info
+                displayMetadata(null);
+            }
         }
     });
     
@@ -356,6 +388,10 @@ function displayMetadata(entry = null) {
     // Toggle archive-only class based on whether a file is selected
     metadataPanel.classList.toggle('archive-only', !entry);
 
+    // Update panel title based on content
+    const panelTitle = metadataPanel.querySelector('h3');
+    panelTitle.textContent = entry ? 'File Details' : 'Archive Comment';
+
     if (entry) {
         // Create metadata grid for file/directory
         const metadataGrid = document.createElement('div');
@@ -397,6 +433,79 @@ function displayMetadata(entry = null) {
 }
 
 /**
+ * Attempts to parse and format JSON content
+ * @param {string} content - The content to parse
+ * @returns {Object} Object containing success status and formatted content
+ */
+function formatJSONContent(content) {
+    try {
+        // Try to parse the content as JSON
+        const jsonObj = JSON.parse(content);
+        
+        // Format the JSON with 2 spaces indentation
+        const formattedJSON = JSON.stringify(jsonObj, null, 2);
+        
+        // Apply syntax highlighting
+        const highlighted = formattedJSON.replace(
+            /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?|\{|\}|\[|\]|,)/g,
+            function (match) {
+                let cls = 'json-string';
+                if (/^"/.test(match)) {
+                    if (/:$/.test(match)) {
+                        cls = 'json-key';
+                        // Remove the colon from the key
+                        match = match.slice(0, -1);
+                    }
+                } else if (/true|false/.test(match)) {
+                    cls = 'json-boolean';
+                } else if (/null/.test(match)) {
+                    cls = 'json-null';
+                } else if (/^-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?$/.test(match)) {
+                    cls = 'json-number';
+                } else if (/[\{\}\[\]]/.test(match)) {
+                    cls = 'json-bracket';
+                } else if (/,/.test(match)) {
+                    cls = 'json-comma';
+                }
+                
+                return `<span class="${cls}">${match}</span>` + (/:$/.test(match) ? ':' : '');
+            }
+        );
+        
+        return {
+            isJSON: true,
+            content: `<div class="json-content">${highlighted}</div>`
+        };
+    } catch (e) {
+        return {
+            isJSON: false,
+            content: content
+        };
+    }
+}
+
+/**
+ * Creates a comment content element with optional JSON formatting
+ * @param {string} content - The comment content
+ * @returns {HTMLElement} The formatted comment content element
+ */
+function createCommentContent(content) {
+    const contentElement = document.createElement('div');
+    contentElement.className = 'zip-comment-content';
+    
+    // Try to format as JSON
+    const formatted = formatJSONContent(content);
+    if (formatted.isJSON) {
+        contentElement.classList.add('json-formatted');
+        contentElement.innerHTML = formatted.content;
+    } else {
+        contentElement.textContent = content;
+    }
+    
+    return contentElement;
+}
+
+/**
  * Displays file and ZIP comments
  * @param {Object} entry - File or directory entry, null if showing archive only
  */
@@ -414,10 +523,8 @@ function displayComments(entry = null) {
     // If a file is selected and it has a comment, show it
     if (entry && entry.comment) {
         const fileCommentHeader = createCommentHeader('File Comment', !bothCommentsExist);
-        const fileCommentContent = document.createElement('div');
-        fileCommentContent.className = 'zip-comment-content';
+        const fileCommentContent = createCommentContent(entry.comment);
         if (bothCommentsExist) fileCommentContent.classList.add('collapsed');
-        fileCommentContent.textContent = entry.comment;
         
         commentsSection.appendChild(fileCommentHeader);
         commentsSection.appendChild(fileCommentContent);
@@ -430,24 +537,29 @@ function displayComments(entry = null) {
 
     // Show ZIP comment if it exists
     if (currentZipComment) {
-        const archiveCommentHeader = createCommentHeader('Archive Comment', !entry);
-        const archiveCommentContent = document.createElement('div');
-        archiveCommentContent.className = 'zip-comment-content';
-        if (entry) archiveCommentContent.classList.add('collapsed');
-        archiveCommentContent.textContent = currentZipComment;
-        
-        // Add spacing between comments if both exist
-        if (entry && entry.comment) {
-            archiveCommentHeader.style.marginTop = '20px';
+        if (entry) {
+            // Show collapsible archive comment when a file is selected
+            const archiveCommentHeader = createCommentHeader('Archive Comment', !entry);
+            const archiveCommentContent = createCommentContent(currentZipComment);
+            if (entry) archiveCommentContent.classList.add('collapsed');
+            
+            // Add spacing between comments if both exist
+            if (entry && entry.comment) {
+                archiveCommentHeader.style.marginTop = '20px';
+            }
+            
+            commentsSection.appendChild(archiveCommentHeader);
+            commentsSection.appendChild(archiveCommentContent);
+            
+            archiveCommentHeader.addEventListener('click', () => {
+                archiveCommentHeader.querySelector('.collapse-icon').classList.toggle('expanded');
+                archiveCommentContent.classList.toggle('collapsed');
+            });
+        } else {
+            // Show archive comment without header when no file is selected
+            const archiveCommentContent = createCommentContent(currentZipComment);
+            commentsSection.appendChild(archiveCommentContent);
         }
-        
-        commentsSection.appendChild(archiveCommentHeader);
-        commentsSection.appendChild(archiveCommentContent);
-        
-        archiveCommentHeader.addEventListener('click', () => {
-            archiveCommentHeader.querySelector('.collapse-icon').classList.toggle('expanded');
-            archiveCommentContent.classList.toggle('collapsed');
-        });
     }
 
     commentsContainer.appendChild(commentsSection);

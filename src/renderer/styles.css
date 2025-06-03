@@ -176,6 +176,15 @@ body {
     flex: 1;
     overflow-y: auto;
     padding-right: 8px;
+    display: flex;
+    flex-direction: column;
+}
+
+.file-tree-entries {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
 }
 
 .file-tree-item {
@@ -385,6 +394,10 @@ body {
     flex-direction: column;
 }
 
+.metadata-panel.archive-only h3 {
+    margin-bottom: 16px;
+}
+
 .metadata-panel.archive-only .zip-comment {
     margin-top: 0;
     padding-top: 0;
@@ -397,7 +410,7 @@ body {
 .metadata-panel.archive-only .zip-comment-content {
     max-height: none;
     flex: 1;
-    margin-top: 12px;
+    margin-top: 0;
 }
 
 .file-icon, .folder-icon {
@@ -514,4 +527,44 @@ body {
     background-repeat: no-repeat;
     background-position: center;
     opacity: 0.9;
+}
+
+/* JSON syntax highlighting */
+.json-content {
+    font-family: var(--font-mono);
+    white-space: pre;
+}
+
+.json-content .json-key {
+    color: var(--accent-primary);
+}
+
+.json-content .json-string {
+    color: #a8e08f;
+}
+
+.json-content .json-number {
+    color: #f78c6c;
+}
+
+.json-content .json-boolean {
+    color: #c792ea;
+}
+
+.json-content .json-null {
+    color: #c792ea;
+}
+
+.json-content .json-bracket {
+    color: #89ddff;
+}
+
+.json-content .json-comma {
+    color: var(--text-secondary);
+}
+
+/* Adjust the comment content for JSON display */
+.zip-comment-content.json-formatted {
+    padding: 20px;
+    tab-size: 2;
 } 
