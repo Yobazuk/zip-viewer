@@ -1,0 +1,33 @@
+.container {
+  display: grid;
+  grid-template-columns: 300px 6px 1fr;
+  grid-template-rows: 32px calc(100vh - 32px);
+}
+
+.sidebar {
+  background: var(--panel);
+  border-right: 1px solid var(--border);
+  grid-row: 2 / 3;
+}
+
+.divider {
+  background: var(--border);
+  cursor: col-resize;
+  grid-row: 2 / 3;
+}
+
+.dividerActive {
+  background: var(--accent);
+}
+
+.panel {
+  background: var(--bg);
+  grid-row: 2 / 3;
+  position: relative;
+  z-index: 1;
+}
+
+.hiddenPanel {
+  display: none;
+}
+

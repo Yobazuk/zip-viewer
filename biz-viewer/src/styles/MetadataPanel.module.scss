@@ -1,0 +1,137 @@
+.panelRoot {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-1);
+}
+
+.header {
+  height: 12px;
+  border-bottom: none;
+}
+
+.content {
+  overflow: auto;
+  padding-bottom: 24px;
+  position: relative;
+}
+
+.placeholder {
+  padding: 16px;
+  color: var(--muted);
+}
+
+.section {
+  padding: 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-1);
+  border-radius: 8px;
+}
+
+.sectionTitleRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.sectionTitle {
+  font-weight: 600;
+  color: var(--fg);
+  margin-bottom: 16px;
+}
+
+.kvGrid {
+  display: grid;
+  grid-template-columns: 150px 1fr;
+  row-gap: 2px;
+  column-gap: 12px;
+}
+
+.row {
+  display: contents;
+}
+
+.key {
+  color: var(--text-2);
+  padding: 0;
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm-plus);
+}
+
+.value {
+  padding: 0;
+  color: var(--text-1);
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm-plus);
+}
+
+.copyable { cursor: pointer; }
+
+.copiedBadge {
+  margin-left: 10px;
+  color: var(--accent-1);
+  font-size: 8px;
+  opacity: 0;
+  animation: fadeSlide 1.2s ease both;
+}
+
+@keyframes fadeSlide {
+  0% { opacity: 0; transform: translateY(2px); }
+  15% { opacity: 1; transform: translateY(0); }
+  85% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-2px); }
+}
+
+.scrollHint {
+  position: sticky;
+  bottom: 9px;
+  height: 9px;
+  width: 100%;
+  margin: 0 auto;
+  background: none;
+  border: none;
+  border-radius: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.scrollHint::before {
+  content: '';
+  display: block;
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 6px solid rgba(74, 158, 255, 0.55);
+}
+
+.copiedToast {
+  position: sticky;
+  bottom: 16px;
+  margin: 0 auto;
+  width: fit-content;
+  padding: 4px 8px;
+  background: rgba(74, 158, 255, 0.12);
+  color: var(--text-1);
+  border-radius: 6px;
+  font-size: var(--fs-xs);
+  border: 1px solid var(--border);
+}
+
+.input {
+  min-width: 0;
+}
+
+// copy button removed; click the value to copy
+
+.value {
+  padding: 6px 0;
+  color: var(--fg);
+  border-radius: 4px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+

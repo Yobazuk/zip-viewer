@@ -1,0 +1,45 @@
+.hidden { display: none; }
+
+.sidebarRoot {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--bg-2);
+}
+
+.titleBar {
+  min-height: 56px;
+  display: flex;
+  align-items: center;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.titleContainer {
+  width: 100%;
+  overflow: hidden;
+}
+
+.title {
+  font-weight: 700;
+  color: var(--text-1);
+  font-size: calc(var(--fs-xl) * 2);
+  line-height: 1.2;
+  margin: 4px 0;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.subtitle {
+  font-weight: 400;
+  color: var(--text-2);
+  font-size: var(--fs-sm-plus);
+  margin-top: 2px;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+

@@ -1,0 +1,134 @@
+.treeRoot {
+  overflow: auto;
+  padding: 12px 6px 28px;
+  background: var(--bg-2);
+  flex: 1;
+  min-height: 0;
+  position: relative;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 38px;
+  transition: background 120ms ease;
+  margin: 2px 4px;
+  border-radius: 6px;
+}
+
+.row:hover {
+  background: var(--hover);
+  cursor: pointer;
+}
+
+.selected {
+  background: var(--selected);
+}
+
+.selected .label {
+  color: var(--accent-1);
+}
+
+.disclosure {
+  width: 24px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  flex: 0 0 24px;
+  flex-shrink: 0;
+}
+
+.bullet {
+  width: 24px;
+  text-align: center;
+  color: var(--text-2);
+  flex: 0 0 24px;
+  flex-shrink: 0;
+}
+
+.label {
+  user-select: none;
+  color: var(--text-1);
+  font-size: var(--fs-md);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.size {
+  margin-left: auto;
+  color: var(--text-2);
+  font-size: var(--fs-xs);
+  padding-right: 10px;
+}
+
+.count {
+  margin-left: auto;
+  color: var(--text-2);
+  font-size: var(--fs-sm);
+  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0 8px;
+  height: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 8px;
+}
+
+.scrollHint {
+  position: sticky;
+  bottom: 9px;
+  height: 9px;
+  width: 100%;
+  margin: 0 auto;
+  background: none;
+  border: none;
+  border-radius: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.scrollHint::before {
+  content: '';
+  display: block;
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 6px solid rgba(74, 158, 255, 0.55);
+}
+
+/* Icons (CSS Modules: expose both camelCase and kebab-case) */
+.folderIcon, .folder-icon {
+  width: 20px;
+  height: 20px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  opacity: 0.9;
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%230ea5e9" d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>');
+  flex: 0 0 20px;
+  flex-shrink: 0;
+}
+
+.fileIcon, .file-icon {
+  width: 20px;
+  height: 20px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  opacity: 0.9;
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%2394a3b8" d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2z"/></svg>');
+  flex: 0 0 20px;
+  flex-shrink: 0;
+}
+
