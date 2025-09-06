@@ -43,3 +43,14 @@
   white-space: nowrap;
 }
 
+.actions { margin-left: auto; }
+.openBtn {
+  background: transparent;
+  color: var(--text-2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 4px 10px;
+  cursor: pointer;
+}
+.openBtn:hover { border-color: var(--accent-1); color: var(--text-1); }
+

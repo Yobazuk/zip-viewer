@@ -8,15 +8,19 @@ type SidebarProps = {
   onSelect: (node: FileNode | null) => void;
   title?: string;
   subtitle?: string;
+  onOpen?: () => void;
 };
 
-export const Sidebar: React.FC<SidebarProps> = ({ data, onSelect, title, subtitle }) => {
+export const Sidebar: React.FC<SidebarProps> = ({ data, onSelect, title, subtitle, onOpen }) => {
   return (
     <div className={styles.sidebarRoot}>
       <div className={styles.titleBar}>
         <div className={styles.titleContainer}>
           {title ? <div className={styles.title} title={title}>{title}</div> : null}
           {subtitle ? <div className={styles.subtitle} title={subtitle}>{subtitle}</div> : null}
+        </div>
+        <div className={styles.actions}>
+          <button className={styles.openBtn} onClick={onOpen} title={onOpen ? 'Open archive (Ctrl+O)' : undefined}>Open</button>
         </div>
       </div>
       <TreeView data={data} onSelect={onSelect} />

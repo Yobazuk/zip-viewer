@@ -59,11 +59,28 @@ export const MetadataPanel: React.FC<Props> = ({ selected }) => {
     const filename = selected.name || '';
     const dotIndex = filename.lastIndexOf('.');
     const ext = selected.type === 'file' && dotIndex > 0 ? filename.slice(dotIndex).toUpperCase() : '-';
+    const formatDateTime24 = (d: string | number | Date): string => {
+      try {
+        const date = new Date(d);
+        return date.toLocaleString(undefined, {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+          hour12: false,
+        });
+      } catch {
+        return String(d);
+      }
+    };
+
     return [
       { label: 'Name', value: filename },
       { label: 'Path', value: parentPath },
       { label: 'Size', value: formatBytes(selected.size) },
-      { label: 'Modified', value: selected.mtime ? new Date(selected.mtime).toLocaleString() : '-' },
+      { label: 'Modified', value: selected.mtime ? formatDateTime24(selected.mtime) : '-' },
       { label: 'Extension', value: ext },
     ];
   }, [selected]);
